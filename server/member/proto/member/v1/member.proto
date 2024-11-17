@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package member.v1;
+
+option go_package = "github.com/ei-sugimoto/microtodo/server/member/gen/member/v1;memberv1";
+
+message CreateRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message CreateResponse {
+}
+
+service MemberService {
+  rpc Create(CreateRequest) returns (CreateResponse) {}
+}
