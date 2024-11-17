@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package health.v1;
+
+option go_package = "github.com/ei-sugimoto/microtodo/server/member/gen/health/v1;healthv1";
+
+message HealthRequest {
+}
+
+message HealthResponse {
+  string message = 1;
+}
+
+service HealthService {
+  rpc Health(HealthRequest) returns (HealthResponse) {}
+}

@@ -1,0 +1,57 @@
+services:
+  bff:
+    build:
+      context: ./server/bff
+      dockerfile: Dockerfile
+    ports:
+      - '5555:5555'
+    volumes:
+      - ./server/bff:/app
+    depends_on:
+      - member
+      - task
+
+  member:
+    build:
+      context: ./server/member
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/member:/app
+    ports:
+      - '5556:5556'
+    depends_on:
+      - member-db
+
+  task:
+    build:
+      context: ./server/task
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/task:/app
+    ports:
+      - '5557:5557'
+    depends_on:
+      - task-db
+
+  member-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: member
+    ports:
+      - '3306:3306'
+    volumes:
+      - member-db-data:/var/lib/mysql
+  task-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: task
+    volumes:
+      - task-db-data:/var/lib/mysql
+    ports:
+      - '3307:3307'
+
+volumes:
+  member-db-data:
+  task-db-data:
