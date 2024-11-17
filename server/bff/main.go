@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/ei-sugimoto/microtodo/server/bff/cmd"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	cmd.Serve()
 }
