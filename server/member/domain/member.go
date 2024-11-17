@@ -18,7 +18,7 @@ func NewMember(name, password string) (*Member, error) {
 	if err := validate(name, password); err != nil {
 		return nil, err
 	}
-	passwordHash := passwordHash(password)
+	passwordHash := PasswordHash(password)
 	return &Member{
 		Name:     name,
 		Password: passwordHash,
@@ -35,6 +35,6 @@ func validate(name, password string) error {
 	return nil
 }
 
-func passwordHash(password string) string {
+func PasswordHash(password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(password))
 }

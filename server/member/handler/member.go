@@ -35,3 +35,27 @@ func (h *MemberHandler) Create(ctx context.Context, req *connect.Request[memberv
 	resp := connect.NewResponse(&memberv1.CreateResponse{})
 	return resp, nil
 }
+
+func (h *MemberHandler) Login(ctx context.Context, req *connect.Request[memberv1.LoginRequest]) (*connect.Response[memberv1.LoginResponse], error) {
+	db := infra.NewDB()
+	defer db.Close()
+
+	memberRepository := persistence.NewMember(db)
+	memberUsecase := usecase.NewMember(memberRepository)
+	member, err := memberUsecase.Login(ctx, req.Msg.Name, req.Msg.Password)
+	if err != nil {
+		if errors.Is(err, domain.ErrNameRequired) || errors.Is(err, domain.ErrPasswordRequired) {
+			return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		}
+		if errors.Is(err, persistence.ErrMemberNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	resp := connect.NewResponse(&memberv1.LoginResponse{
+		Id:   int64(member.ID),
+		Name: member.Name,
+	})
+	return resp, nil
+}

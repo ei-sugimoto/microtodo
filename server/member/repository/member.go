@@ -8,4 +8,5 @@ import (
 
 type Member interface {
 	Create(ctx context.Context, m *domain.Member) error
+	Login(ctx context.Context, name, password string) (*domain.Member, error)
 }

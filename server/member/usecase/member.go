@@ -22,3 +22,8 @@ func (m *Member) Create(ctx context.Context, name, password string) error {
 	}
 	return m.MemberRepository.Create(ctx, member)
 }
+
+func (m *Member) Login(ctx context.Context, name, password string) (*domain.Member, error) {
+	passwordHash := domain.PasswordHash(password)
+	return m.MemberRepository.Login(ctx, name, passwordHash)
+}

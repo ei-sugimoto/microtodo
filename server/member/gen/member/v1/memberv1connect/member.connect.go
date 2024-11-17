@@ -35,17 +35,21 @@ const (
 const (
 	// MemberServiceCreateProcedure is the fully-qualified name of the MemberService's Create RPC.
 	MemberServiceCreateProcedure = "/member.v1.MemberService/Create"
+	// MemberServiceLoginProcedure is the fully-qualified name of the MemberService's Login RPC.
+	MemberServiceLoginProcedure = "/member.v1.MemberService/Login"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	memberServiceServiceDescriptor      = v1.File_member_v1_member_proto.Services().ByName("MemberService")
 	memberServiceCreateMethodDescriptor = memberServiceServiceDescriptor.Methods().ByName("Create")
+	memberServiceLoginMethodDescriptor  = memberServiceServiceDescriptor.Methods().ByName("Login")
 )
 
 // MemberServiceClient is a client for the member.v1.MemberService service.
 type MemberServiceClient interface {
 	Create(context.Context, *connect.Request[v1.CreateRequest]) (*connect.Response[v1.CreateResponse], error)
+	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
 }
 
 // NewMemberServiceClient constructs a client for the member.v1.MemberService service. By default,
@@ -64,12 +68,19 @@ func NewMemberServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 			connect.WithSchema(memberServiceCreateMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		login: connect.NewClient[v1.LoginRequest, v1.LoginResponse](
+			httpClient,
+			baseURL+MemberServiceLoginProcedure,
+			connect.WithSchema(memberServiceLoginMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // memberServiceClient implements MemberServiceClient.
 type memberServiceClient struct {
 	create *connect.Client[v1.CreateRequest, v1.CreateResponse]
+	login  *connect.Client[v1.LoginRequest, v1.LoginResponse]
 }
 
 // Create calls member.v1.MemberService.Create.
@@ -77,9 +88,15 @@ func (c *memberServiceClient) Create(ctx context.Context, req *connect.Request[v
 	return c.create.CallUnary(ctx, req)
 }
 
+// Login calls member.v1.MemberService.Login.
+func (c *memberServiceClient) Login(ctx context.Context, req *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error) {
+	return c.login.CallUnary(ctx, req)
+}
+
 // MemberServiceHandler is an implementation of the member.v1.MemberService service.
 type MemberServiceHandler interface {
 	Create(context.Context, *connect.Request[v1.CreateRequest]) (*connect.Response[v1.CreateResponse], error)
+	Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error)
 }
 
 // NewMemberServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -94,10 +111,18 @@ func NewMemberServiceHandler(svc MemberServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(memberServiceCreateMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	memberServiceLoginHandler := connect.NewUnaryHandler(
+		MemberServiceLoginProcedure,
+		svc.Login,
+		connect.WithSchema(memberServiceLoginMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/member.v1.MemberService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MemberServiceCreateProcedure:
 			memberServiceCreateHandler.ServeHTTP(w, r)
+		case MemberServiceLoginProcedure:
+			memberServiceLoginHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -109,4 +134,8 @@ type UnimplementedMemberServiceHandler struct{}
 
 func (UnimplementedMemberServiceHandler) Create(context.Context, *connect.Request[v1.CreateRequest]) (*connect.Response[v1.CreateResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("member.v1.MemberService.Create is not implemented"))
+}
+
+func (UnimplementedMemberServiceHandler) Login(context.Context, *connect.Request[v1.LoginRequest]) (*connect.Response[v1.LoginResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("member.v1.MemberService.Login is not implemented"))
 }
