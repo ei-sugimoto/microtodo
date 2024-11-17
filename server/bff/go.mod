@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	connectrpc.com/connect v1.17.0
-	github.com/ei-sugimoto/microtodo/server/member v0.0.0-20241117143302-0e1f82816ef6
+	github.com/ei-sugimoto/microtodo/server/member v0.0.0-20241117154729-1f05ff20baa0
 	github.com/labstack/echo/v4 v4.12.0
 )
 
@@ -19,6 +19,6 @@ require (
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/time v0.8.0 // indirect
 	google.golang.org/protobuf v1.35.2 // indirect
 )

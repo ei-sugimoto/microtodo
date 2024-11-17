@@ -18,7 +18,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		slog.Info("request", "method", r.Method, "url", r.URL.String(), "user-agent", r.UserAgent(), "remote-addr", r.RemoteAddr)
+		slog.Info("request", "method", r.Method, "url", r.URL.String(), "user-agent", r.UserAgent(), "remote-addr", r.RemoteAddr, "content-length", r.ContentLength, "proto", r.Proto)
 		start := time.Now()
 
 		rw := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
